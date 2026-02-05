@@ -1,247 +1,164 @@
 <!doctype html>
 <html lang="fr">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Poids</title>
-  <meta name="theme-color" content="#f5f5f7" />
   <script defer src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <style>
-    :root{
-      --bg:#f5f5f7;
-      --card:#ffffff;
-      --text:#111111;
-      --muted:#6e6e73;
-      --border:#e5e5ea;
-      --shadow:0 14px 34px rgba(0,0,0,.08);
-      --blue:#0071e3;
-      --green:#2f9f58;
-      --red:#d83131;
-      --radius:18px;
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", Helvetica, Arial;
+      background: #f5f5f7;
+      color: #111;
     }
-    *{box-sizing:border-box}
-    body{
-      margin:0;
-      background:var(--bg);
-      color:var(--text);
-      font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    .wrap {
+      max-width: 900px;
+      margin: auto;
+      padding: 32px 16px;
     }
-    .wrap{max-width:920px;margin:0 auto;padding:28px 14px 64px}
-    header{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap}
-    h1{margin:0;font-size:34px;font-weight:800;letter-spacing:-.02em}
-    .sub{margin-top:6px;color:var(--muted);font-size:14px}
-    .chip{
-      border:1px solid var(--border);
-      background:#fff;
-      color:var(--muted);
-      border-radius:999px;
-      padding:8px 14px;
-      font-size:13px;
+    h1 {
+      font-size: 36px;
+      margin: 0;
     }
-
-    .metrics{
-      margin-top:18px;
-      display:grid;
-      grid-template-columns:repeat(2,minmax(0,1fr));
-      gap:12px;
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-top: 24px;
     }
-    @media(min-width:920px){
-      .metrics{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .card {
+      background: #fff;
+      border-radius: 18px;
+      padding: 20px;
+      box-shadow: 0 12px 30px rgba(0,0,0,.08);
     }
-
-    .card{
-      background:var(--card);
-      border:1px solid var(--border);
-      border-radius:var(--radius);
-      box-shadow:var(--shadow);
-      padding:16px;
+    .label {
+      color: #6e6e73;
+      font-size: 13px;
     }
-    .label{color:var(--muted);font-size:12px}
-    .value{
-      margin-top:6px;
-      font-size:30px;
-      font-weight:760;
-      letter-spacing:-.02em;
-      font-variant-numeric:tabular-nums;
+    .value {
+      font-size: 32px;
+      font-weight: 700;
+      margin-top: 6px;
     }
-    .unit{font-size:14px;color:var(--muted);margin-left:6px;font-weight:600}
-    .hint{margin-top:6px;color:var(--muted);font-size:13px}
-
-    .up{color:var(--red)}
-    .down{color:var(--green)}
-    .flat{color:var(--muted)}
-
-    .grid{margin-top:12px;display:grid;gap:12px}
-    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end}
-
-    label{display:grid;gap:6px;color:var(--muted);font-size:12px}
-    input{
-      height:42px;
-      min-width:160px;
-      border-radius:12px;
-      border:1px solid var(--border);
-      padding:0 12px;
-      font-size:16px;
-      background:#fff;
+    input, button {
+      height: 44px;
+      border-radius: 12px;
+      border: 1px solid #ddd;
+      padding: 0 12px;
+      font-size: 16px;
     }
-    button{
-      height:42px;
-      border-radius:12px;
-      border:0;
-      padding:0 14px;
-      background:var(--blue);
-      color:#fff;
-      font-weight:700;
-      cursor:pointer;
+    button {
+      background: #0071e3;
+      color: white;
+      border: none;
+      cursor: pointer;
     }
-    .msg{margin-top:8px;font-size:13px;color:var(--muted)}
-    .err{color:#b00020}
-
-    canvas{width:100%!important;height:320px!important}
+    canvas {
+      margin-top: 24px;
+    }
+    .error {
+      color: #b00020;
+      margin-top: 10px;
+    }
   </style>
 </head>
 
 <body>
 <div class="wrap">
-  <header>
-    <div>
-      <h1>Poids</h1>
-      <div class="sub">Suivi simple et personnel</div>
-    </div>
-    <div id="status" class="chip">Synchronisation…</div>
-  </header>
+  <h1>Poids</h1>
 
-  <section class="metrics">
+  <div class="cards">
     <div class="card">
       <div class="label">Dernier poids</div>
-      <div id="lastWeight" class="value">—</div>
-      <div id="lastDate" class="hint">Aucune donnée</div>
+      <div id="last" class="value">—</div>
     </div>
-
     <div class="card">
-      <div class="label">Variation vs dernière saisie</div>
+      <div class="label">Variation vs dernière</div>
       <div id="deltaPrev" class="value">—</div>
     </div>
-
     <div class="card">
       <div class="label">Variation vs départ</div>
       <div id="deltaFirst" class="value">—</div>
     </div>
-  </section>
+  </div>
 
-  <section class="grid">
-    <div class="card">
-      <div class="label">Ajouter une mesure</div>
-      <div class="row" style="margin-top:10px">
-        <label>Date
-          <input id="date" type="date">
-        </label>
-        <label>Poids (kg)
-          <input id="weight" type="number" step="0.1" placeholder="73.4">
-        </label>
-        <button id="save">Enregistrer</button>
-      </div>
-      <div id="msg" class="msg"></div>
+  <div class="card" style="margin-top:24px">
+    <div class="label">Ajouter une mesure</div>
+    <div style="display:flex;gap:12px;margin-top:12px;flex-wrap:wrap">
+      <input id="date" type="date">
+      <input id="weight" type="number" step="0.1" placeholder="73.4">
+      <button onclick="add()">Enregistrer</button>
     </div>
+    <div id="msg" class="error"></div>
+  </div>
 
-    <div class="card">
-      <div class="label">Évolution</div>
-      <canvas id="chart"></canvas>
-    </div>
-  </section>
+  <canvas id="chart" height="120"></canvas>
 </div>
 
-<script type="module">
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwrovTbQVYe7MvCZO8mSA7OtYDSpk1Vfq0_HxeTuY17Jo8m3AJlh_9CkU_qjKx-Ruc_yA/exec";
+<script>
+const API = "https://script.google.com/macros/s/AKfycbzHnl6nCiVVXux5TAxJRd9dDTx6xnDG6BVNtI3p0fhdRCmh8tvUOKhwiY1haa_q1RVtrw/exec";
 const TOKEN = "arthur";
 
-const $ = id => document.getElementById(id);
-const fmt = new Intl.NumberFormat("fr-FR",{minimumFractionDigits:1,maximumFractionDigits:1});
+document.getElementById("date").value = new Date().toISOString().slice(0,10);
 
-$("date").value = new Date().toISOString().slice(0,10);
-
-function jsonp(url){
-  return new Promise((resolve,reject)=>{
-    const cb="cb_"+Math.random().toString(36).slice(2);
-    const s=document.createElement("script");
-    window[cb]=d=>{delete window[cb];s.remove();resolve(d);}
-    s.onerror=()=>reject("Erreur réseau");
-    s.src=url+(url.includes("?")?"&":"?")+"callback="+cb;
-    document.body.appendChild(s);
+function jsonp(url) {
+  return new Promise(resolve => {
+    const cb = "cb" + Math.random().toString(36).slice(2);
+    window[cb] = data => {
+      delete window[cb];
+      script.remove();
+      resolve(data);
+    };
+    const script = document.createElement("script");
+    script.src = url + "&callback=" + cb;
+    document.body.appendChild(script);
   });
 }
 
-const apiList=()=>jsonp(`${SCRIPT_URL}?action=list&token=${TOKEN}`);
-const apiAdd=(d,w)=>jsonp(`${SCRIPT_URL}?action=add&date=${d}&weight=${w}&token=${TOKEN}`);
+async function load() {
+  const res = await jsonp(`${API}?action=list&token=${TOKEN}`);
+  if (!res.ok) return showError(res.error);
 
-let chart;
-function initChart(){
-  chart=new Chart($("chart"),{
-    type:"line",
-    data:{labels:[],datasets:[{
-      data:[],
-      borderColor:"#0071e3",
-      backgroundColor:"rgba(0,113,227,.15)",
-      fill:true,
-      tension:.25
-    }]},
-    options:{plugins:{legend:{display:false}}}
-  });
-}
+  const d = res.data;
+  if (!d.length) return;
 
-function render(data){
-  const rows=(data||[]).sort((a,b)=>a.date.localeCompare(b.date));
-  $("status").textContent="Synchronisé ✓";
+  document.getElementById("last").textContent = d.at(-1).weight + " kg";
 
-  const last=rows.at(-1);
-  const prev=rows.at(-2);
-  const first=rows[0];
+  if (d.length > 1) {
+    document.getElementById("deltaPrev").textContent =
+      (d.at(-1).weight - d.at(-2).weight).toFixed(1) + " kg";
+    document.getElementById("deltaFirst").textContent =
+      (d.at(-1).weight - d[0].weight).toFixed(1) + " kg";
+  }
 
-  $("lastWeight").innerHTML=last?`${fmt.format(last.weight)}<span class="unit">kg</span>`:"—";
-  $("lastDate").textContent=last?`Le ${last.date}`:"Aucune donnée";
-
-  const dPrev=last&&prev?last.weight-prev.weight:NaN;
-  const dFirst=last&&first?last.weight-first.weight:NaN;
-
-  showDelta("deltaPrev",dPrev);
-  showDelta("deltaFirst",dFirst);
-
-  chart.data.labels=rows.map(r=>r.date);
-  chart.data.datasets[0].data=rows.map(r=>r.weight);
+  chart.data.labels = d.map(x => x.date);
+  chart.data.datasets[0].data = d.map(x => x.weight);
   chart.update();
 }
 
-function showDelta(id,val){
-  const el=$(id);
-  if(!Number.isFinite(val)){el.textContent="—";el.className="value flat";return;}
-  const sign=val>0?"+":"";
-  el.innerHTML=`${sign}${fmt.format(val)}<span class="unit">kg</span>`;
-  el.className="value "+(val>0?"up":val<0?"down":"flat");
-}
-
-async function load(){
-  try{
-    const out=await apiList();
-    if(!out.ok) throw out.error;
-    render(out.data);
-  }catch(e){
-    $("status").textContent="Erreur";
-  }
-}
-
-$("save").onclick=async()=>{
-  const d=$("date").value;
-  const w=parseFloat($("weight").value);
-  if(!d||!Number.isFinite(w)) return $("msg").textContent="Entrée invalide";
-  await apiAdd(d,w);
-  $("weight").value="";
+async function add() {
+  const date = dateInput.value;
+  const weight = weightInput.value;
+  const res = await jsonp(`${API}?action=add&date=${date}&weight=${weight}&token=${TOKEN}`);
+  if (!res.ok) return showError(res.error);
   load();
-};
+}
 
-const wait=setInterval(()=>{
-  if(window.Chart){clearInterval(wait);initChart();load();}
-},50);
+function showError(t) {
+  document.getElementById("msg").textContent = t;
+}
+
+const ctx = document.getElementById("chart");
+const chart = new Chart(ctx, {
+  type: "line",
+  data: { labels: [], datasets: [{ data: [], borderColor: "#0071e3" }] },
+  options: { plugins: { legend: { display: false } } }
+});
+
+load();
 </script>
 </body>
 </html>
